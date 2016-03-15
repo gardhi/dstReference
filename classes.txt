@@ -1,0 +1,262 @@
+classes:
+
+classdef SimulationParameters
+    %SIMPARAM Defines the simulation input parameters
+    %   Implemented in class in order to get dependent variables calculated
+    %   by default initiation
+    
+    % these could all be dependent on budget
+    properties           
+        pvStartKw               % Min PV power simulated [kW]
+        pvStopKw                % Max PV power simulated [kW]
+        pvStepKw                % PV power simulation step [kW]
+        battStartKwh            % Min Battery capacity simulated [kWh]
+        battStopKwh             % Max Battery capacity simulated [kWh]
+        battStepKwh             % Battery capacity simulation step [kWh]
+        llpSearchAcceptance     % Acceptence error when searching a spesific LLP value
+        llpSearchTargets        % LLP range that one want to find optimal solutions within.
+        nBattSteps
+        nPvSteps
+    end
+    
+        
+    methods
+        function obj = SimulationParameters(...        
+            pvStartKw,...               % Min PV power simulated [kW]
+            pvStopKw,...                % Max PV power simulated [kW]
+            pvStepKw,...                % PV power simulation step [kW]
+            battStartKwh,...            % Min Battery capacity simulated [kWh]
+            battStopKwh,...             % Max Battery capacity simulated [kWh]
+            battStepKwh,...             % Battery capacity simulation step [kWh]
+            llpSearchAcceptance,...     % Acceptence error when searching a spesific LLP value
+            llpSearchTargets)           % LLP range that one want to find optimal solutions within.)
+   
+
+PvParameters.balanceOfSystem = 0.85;               
+PvParameters.nominalAmbientTemperatureC = 20;    % Nominal ambient test-temperature of the panels [C]
+PvParameters.nominalCellTemperatureC = 47;        % Nominal Operating Cell Temperature [C]
+PvParameters.nominalIrradiation = 0.8;           % Irradiation at nominal operation [kW / m^2]
+PvParameters.powerDerateDueTemperature = 0.004;  % Derating of panel's power due to temperature [/C]
+
+
+
+classdef BatteryParameters
+
+    properties
+        minStateOfCharge
+        initialStateOfCharge
+        chargingEfficiency
+        dischargingEfficiency
+        powerEnergyRatio
+        maxOperationalYears
+    end
+    
+    methods
+    end
+classdef SimulationInputData
+
+    properties
+        load
+        irradiation
+        temperature
+        
+        nHours
+        nYears
+        
+        irradiationFilename
+        loadProfileFilename
+        temperatureFilename
+        
+        folderName
+        databasePath
+        
+    end
+    
+    methods
+        
+        function obj = SimulationInputData(loadProfileFilename,...
+                                           irradiationFilename,...
+                                           temperatureFilename,...
+                                           folderName)
+            obj.folderName = folderName;
+            obj.databasePath = get_path_to_database_folder(folderName);
+                                             
+            obj.loadProfileFilename = loadProfileFilename;
+            obj.irradiationFilename = irradiationFilename;
+            obj.temperatureFilename = temperatureFilename;
+                                             
+            obj.load = importdata([obj.databasePath...
+                                   obj.loadProfileFilename]); 
+                               
+            obj.irradiation = importdata([obj.databasePath...
+                                          obj.irradiationFilename]);
+                                      
+            obj.temperature = importdata([obj.databasePath...
+                                          obj.temperatureFilename]);
+            
+            if (length(obj.load) == length(obj.irradiation))...
+            && (length(obj.load) == length(obj.temperature))
+                obj.nHours = length(obj.temperature);
+            else
+                fprintf(['Warning: the data sets\n\t- irradiation data\n\t-',...
+                         'ambience temperature data\n\t- load profile data \n',...
+                         'are NOT the same size'])
+            end
+            
+            obj.nYears = obj.nHours / 8760;
+            
+        end
+
+    end
+    
+end
+
+classdef EconomicParameters
+
+    properties
+        
+        budget                      % Budget in EUR
+        pvCostKw                    % PV panel cost [/kW] (source: Uganda data)
+        battCostKwh                 % variable cost [per kWh]  %132.78;
+        battCostFixed               % fixed cost
+        inverterCostKw              % Inverter cost [/kW] (source: MCM_Energy Lab + prof. Silva exercise, POLIMI)
+        operationMaintenanceCostKw  % Operations & Maintenance cost for the overall plant [/kW*year] (source: MCM_Energy Lab)
+        installBalanceOfSystemCost  % Installation (I) and BoS cost as % of cost of PV+battery+Inv [% of Investment cost] (source: Masters, Renewable and Efficient Electric Power Systems,)
+        plantLifetime               % plant LifeTime [year] 
+        interestRate                % rate of interest defined as (HOMER) = nominal rate - inflation
+
+    end
+    
+    methods
+    end
+    
+end
+
+
+classdef SimulationOutputs
+    %SIMOUTPUT Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties (SetAccess='private')
+        pvPowerAbsorbed
+        neededBattOutputKw
+        battOutputKw
+        lossOfLoad
+        lossOfLoadTot
+        lossOfLoadProbability
+        pvPowerAbsorbedUnused
+        stateOfCharge
+        sumPartialCyclesUsed
+        % battOutputKw
+    end
+
+    methods
+        function obj = SimulationOutputs(pvPowerAbsorbed,...
+                            neededBattOutputKw,...
+                            battOutputKw,...
+                            lossOfLoad,...
+                            lossOfLoadTot,...
+                            lossOfLoadProbability,...
+                            pvPowerAbsorbedUnused,...
+                            stateOfCharge,...
+                            sumPartialCyclesUsed)
+                        
+           if nargin > 0
+                obj.pvPowerAbsorbed = pvPowerAbsorbed; 
+                obj.neededBattOutputKw = neededBattOutputKw;
+                obj.battOutputKw = battOutputKw;
+                obj.lossOfLoad = lossOfLoad;
+                obj.lossOfLoadTot = lossOfLoadTot;
+                obj.lossOfLoadProbability = lossOfLoadProbability;
+                obj.pvPowerAbsorbedUnused = pvPowerAbsorbedUnused;
+                obj.stateOfCharge = stateOfCharge;
+                obj.sumPartialCyclesUsed = sumPartialCyclesUsed;
+           end
+        end
+
+    end
+    
+end
+
+
+
+end
+classdef EconomicAnalysisOutputs
+    
+    properties (SetAccess = private)
+        % all are nPv nBatt matrices or scalar
+        investmentCost         
+        netPresentCost         
+        levelizedCostOfEnergy       
+        battCostTot                    
+        inverterCostTot        
+        pvCostTot
+        installBalanceOfSystemTotCost           
+        operationsMaintenanceReplacementTotCost 
+        capitalRecoveryFactor % see wikipedia
+        nBattEmployed    
+    end
+    
+    methods
+    function ecoOutput = EconomicAnalysisOutputs(investment_cost,... 
+            netPresentCost,... 
+            levelizedCostOfEnergy,...
+            battCostTot,...
+            inverterCostTot,...
+            pvCostTot,...
+            installBalanceOfSystemTotCost,...
+            operationsMaintenanceReplacementTotCost,...     
+            capitalRecoveryFactor,...
+            nBattEmployed)
+
+        ecoOutput.investmentCost = investment_cost;          
+        ecoOutput.netPresentCost = netPresentCost;
+        ecoOutput.levelizedCostOfEnergy = levelizedCostOfEnergy;
+
+        ecoOutput.battCostTot = battCostTot;
+        ecoOutput.inverterCostTot = inverterCostTot;
+        ecoOutput.pvCostTot = pvCostTot;
+
+        ecoOutput.installBalanceOfSystemTotCost = installBalanceOfSystemTotCost;
+        ecoOutput.operationsMaintenanceReplacementTotCost ...
+                        = operationsMaintenanceReplacementTotCost ;
+        ecoOutput.capitalRecoveryFactor = capitalRecoveryFactor ;
+        ecoOutput.nBattEmployed = nBattEmployed ;
+    end
+    end
+    
+end
+
+classdef OptimalSolutions
+
+    properties
+        % these are the pairs of indexes corresponding to optimal solutions
+        % they can be used in the matrices with nPv and nBatt spaces
+        pvIndexes      
+        battIndexes
+        % these are the corresponding sizes of the components
+        pvKw                           
+        battKwh
+        % these describe the optimal solutions
+        lossOfLoadProbabilities
+        levelizedCostsOfEnergy
+        investmentCosts
+    end
+    
+    methods 
+        function obj = OptimalSolutions(pvIndexes, battIndexes, pvKw, battKwh,...
+                                   lossOfLoadProbabilities,...
+                                   levelizedCostsOfEnergy,...
+                                   investmentCosts)
+            
+            obj.pvIndexes = pvIndexes;
+            obj.battIndexes = battIndexes;
+            obj.pvKw = pvKw;
+            obj.battKwh = battKwh;
+            obj.lossOfLoadProbabilities = lossOfLoadProbabilities;
+            obj.levelizedCostsOfEnergy = levelizedCostsOfEnergy;
+            obj.investmentCosts = investmentCosts;
+        end
+    end
+    
+end

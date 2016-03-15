@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+OL {counter-reset: item}
+LI {display: block}
+LI:before { content: counters(item, ".") " "; counter-increment: item }
+h1 {color:Blue}
+<!--h1:before { content: conters(item, ".") " "; counter-increment: item }-->
+h2 {color:Blue}
+</style>
+</head>
+
+<body>
+
+<div align="center">
+<h1 id="top"> Development Support Tool </h1>
+<h2>Reference Manual </h2>
+<p>by Gard Hillestad 2016</p>
+<hr />
+
+<small>This manual explains how to use the Development Support Tool (DST) developed by Stefano Mandelli, Håkon Duus and Gard Hillestad. Please refer to the table of contents. If better names are found for a parameter or variable, please feel free to edit, but remember to edit documentation aswell</small>
+
+</div>
+<div align="left">
+
+<h3> TODOS: </h3>
+<a href="#power_derate"> find the unit of power derate ?/C </a>
+<a href="#economic_analysis_outputs"> mention the simulation outputs as a output from the biomass module</a>
+<a href="#economic_analysis_outputs">change the placement of "Tot" as soon as it is replaced in the code.</a>
+<p> check if there are any comments from stefano that should be here </p>
+
+<h3> Table of contents </h3>
+<ol>
+<li><a href="#simulation-param"> Simulation Parameters </a>
+<ol>	<li> pvStartKw </li>
+	<li> pvStopKw </li>
+	</ol></li>
+<li><a href="#battery-param">Battery Parameters</a></li>
+</ol>
+
+<h2 id="modules"> Modules <font size="3"> <a href="#top"> (top) </a> </font> </h2>
+<h3 id="sapv_module"> sapv_plant_simulation </h3>
+<p> This is the "Stand Alone PV Plant Simulation". It simulates the entire time series of the input data for every combination of PV and battery value, chosen as the simulation parameters. The module output is the class SimulationOutputs. </p>
+<h3 id="eco_module"> economic_analysis </h3>
+<p> This module provide the economic calculations for the simulation results. The module output is the class EconomicAnalysisResults</p>
+<h3 id="llp_module"> llp_constrained_optimums </h3>
+
+
+<!-- CLASSES AND PROPERTIES =================================-->
+<h2 id="param"> Classes and Properties <font size="3"> <a href="#top"> (top) </a> </font></h2>
+<p>All parameters, inputs and outputs are contained in classes. The classes allow for batch passing of variables, and offer some help functions for generating dependent variables. The classes also allow for more comprehensive naming, consistency and understanding the origin or relation of the variable. <b>The classes should be made pointers so that they are not copied between modules. This is not the case in the Matlab implementation but is the default behaviour of python</b></p>
+
+<!-- Simulation Parameters ------------------------------------>
+<h3 id="simulation-param">SimulatonParameters <small>(class)</small> </h3>
+<p>This class contain the parameters for setting the boundries and step size for the simulation PV and battery pairs in the simulation module, and LLPs for the llp_constrained_optimums module. All combinations of PV and battery simulate over the timespan of the input data sets. The resulting complexity of the DST is nPv*nBatt*nHours.</p>
+<blockquote>
+<h4 id="pv-start"> pvStartKw </h4>
+<p>The lowest value of PV size that is simulated. The PV size is given in kW and not in a metric. The size for each kW varies over time and could be input in the PV parameters class, if features which require this metric are added.</p>
+<h4 id="pv-stop"> pvStopKw </h4>
+<p>The maximum value that the simulation will pair with a battery size.</p>
+<h4 id="pv-step"> pvStepKw </h4>
+<p>The step size between PV sizes in the given range from pvStartKw to pvStopKw. For wide searches, a large step size is recomended. Details become computationally expensive in wide searches.</p>
+<h4 id="batt-start"> battStartKwh </h4>
+<p>The lowest battery size simulated. The size of battery is given in kWh capacity.</p>
+<h4 id="batt-stop"> battStopKwh </h4>
+<p> The maximum size battery that is simulated.</p>
+<h4 id="batt-step"> battStepKw</h4>
+<p> The step size that determine the number of battery sizes between battStartKwh and battStopKwh simulated.</p>
+<h4 id="llp-acceptance"> llpSearchAcceptance </h4>
+<p> Used in the llp_constrained_optimums module, there is a range of llp values that the algorithm try to find in the simulation results. This value sets the acceptance interval for each value step.</p>
+<h4 id="llp-start"> llpStart </h4>
+<p>The lowest value of loss of load probabilities that the module tries to find a match for in the simulation outputs.</p>
+<h4 id="llp-stop> llpStop </h4>
+<p>The highest value of loss of load probabilities that the algorithm that the module tries to find a match for in the simulation outputs.</p>
+<h4 id="llp-step> llpStep </h4>
+<p>The step size that determine the resolution of the search for loss of load probabilities. This step size does not affect the computation speed much as it has complexity O(n) and can be set reasonably small if desired.</p>
+<h4 id="llp_targets"> llpSearchTargets </h4>
+<p>This variable collects previous variables into one array, generated the following way llpStart:llpStep:llpStop</p>
+<h4 id="n_pv"> nPvSteps </h4>
+<p>Keeps track of the total number of PV sizes simulated. Automatically generated upon initiation.</p>
+<h4 id="n_batt"> nBattSteps </h4>
+<p>Keeps track of the total number of battery sizes simulated. Automatically generated upon initiation.</p>
+</blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+
+<!-- PV Parameters ----------------------------------------------->
+<h3 id="pv-param">PvParameters <small>(class)</small></h3>
+<p>Contains the physical parameters of the pv array and cells</p>
+<blockquote>
+<h4 id="balance_of_system"> balanceOfSystem </h4>
+<p> A collection of factors that will make the PV less efficient. Among these factors are soiling of the panels, wiring losses, shading, snow cover, aging and so on </p>
+<h4 id="nominal_ambient_temperature"> nominalAmbientTemperatureC </h4>
+<p> The nominal air temperature in the suroundings of the PV. Given in celsius.</p>
+<h4 id="nominal_cell_temperature"> nominalCellTemperatureC </h4>
+<p> The nominal cell temperature when exposed to irradiation. Given in celsius.</p>
+<h4 id="nominal_irradiation"> nominalIrradiation </h4>
+<p> The nominal irradiation exposure level of the PV. Given in kW per square fot. (kW/m^2) </p>
+<h4 id="power_derate"> powerDerateDueTemperature </h4>
+<p> The expected loss of power due to difference from nominal cell temperature. </p>
+</blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+
+<!-- Battery Parameters ------------------------------------------>
+<h3 id="battery-param"> BatteryParameters <small>(class)</small></h3>
+<p> This class contain the different physical parameters of the battery </p>
+<blockquote>
+<h4 id="min_soc"> minimumStateOfCharge </h4>
+<p> The maximum discharge percentage that the battery allow. Depending on the individual battery's depth of charge vs. cycles to failure function this should be set to optimize the lifetime of the battery</p>
+<h4 id="init_soc"> initialStateOfCharge </h4>
+<p> The state of charge at t = 0</p>
+<h4 id="charging_efficiency"> chargingEfficiency </h4>
+<p> The percentage of power imposed on the battery that end up in the battery as potential power</p>
+<h4 id="discharging_efficiency"> dischargingEfficiency </h4>
+<p> The percentage of potential power that is output as usefull power from the battery </p>
+<h4 id="power_energy_ratio"> powerEnergyRatio </h4>
+<p> The kW output power possible, given a energy level in the battery in kWh. For example, a battery with powerEnergyRatio = 0.5 can maximum output 50 kW if the energy level is at 100 kWh. </p>
+<h4 id="max_operational_years"> maxOperationalYears </h4>
+<p> The maximum number of years that the battery can stay operational independent of how the battery is used. </p>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+</blockquote>
+
+<!-- Inverter Parameters ----------------------------------------->
+<h3 id="inverter-param"> Inverter Parameters <small>(class)</small></h3>
+<p> The physical parameters of the inverter </p>
+<blockquote>
+<h4 id="efficiency"> efficiency </h4>
+<p> The efficiency of the inverter. the percentage of output power wrt. input power. </p>
+</blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+
+<!-- Economic Parameters ---------------------------------------->
+<h3 id="economic_parameters"> EconomicParameters <small>(class)</small></h3>
+<blockquote>
+<h4 id="budget"> budget </h4>
+<p> The available money for the project. This variable is unused in the modules </p>
+<h4 id="pv_cost"> pvCostKw </h4>
+<h4 id="batt_cost"> battCostKwh </h4>
+<h4 id="batt_cost_fixed"> battCostFixed </h4>
+<h4 id="inverter_cost_kw"> inverterCostKw </h4>
+<h4 id="operation_maintenance_cost"> operationMaintenanceCostKw </h4>
+<h4 id="install_balance_of_system> installBalanceOfSystemCost </h4>
+<h4 id="plant_lifetime"> plantLifetime </h4>
+<h4 id="interest_rate"> interestRate</h4>
+</blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+
+<!-- Simulation Input Data --------------------------------------->
+<h3 id="simulation_input_data"> SimulationInputData <small>(class)</small></h3>
+<blockquote>
+<h4 id="load"> load </h4>
+<h4 id="irradiation"> irradiation </h4>
+<h4 id="temperature"> temperature </h4>
+<h4 id="n_hours"> nHours </h4>
+<h4 id="n_years"> nYears </h4>
+<h4 id="irradiation_filename"> irradiationFilename </h4>
+<h4 id="load_profile_filename"> loadProfileFilename </h4>
+<h4 id="temperature_filename"> temperatureFilename </h4>
+<h4 id="folderName"> folderName </h4>
+<h4 id="databasePath"> databasePath </h4>
+</blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+
+<!-- Simulation Outputs ----------------------------------------->
+<h3 id="simulation_outputs"> SimulationOutputs <small> (class) </small> </h3>
+The outputs from the sapv_plant_simulation module for battery and PV combinations.
+<blockquote>
+<h4 id="pv_power_absorbed"> pvPowerAbsorbed</h4>
+<h4 id="needed_batt_output"> neededBattOutputKw</h4>
+<h4 id="batt_output"> battOutputKw </h4>
+<h4 id="loss_of_load"> lossOfLoad </h4>
+<h4 id="loss_of_load_tot"> lossOfLoadTot </h4>
+<h4 id="loss_of_load_probability"> lossOfLoadProbability </h4>
+<h4 id="pv_power_absorbed_unused"> pvPowerAbsorbedUnused </h4>
+<h4 id="state_of_charge"> stateOfCharge </h4>
+<h4 id="sum_partial_cycles_used"> sumPartialCyclesUsed </h4>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+</blockquote>
+
+<!-- EconomicAnalysisOutputs ------------------------------------>
+<h3 id="economic_analysis_outputs"> EconomicAnalysisOutputs <small>(class)</small> </h3>
+<p> The output class of the economic_analysis module <p>
+<blockquote>
+<h4 id="investment_cost"> investmentCost </h4>
+<h4 id="net_present_cost"> netPresentCost </h4>
+<h4 id="levelized_cost_of_energy"> levelizedCostOfEnergy </h4>
+<h4 id="batt_cost_tot"> battCostTot </h4>
+<h4 id="inverter_cost_tot"> inverterCostTot </h4>
+<h4 id="pv_cost_tot"> pvCostTot </h4>
+<h4 id="install_balance_of_system_cost_tot"> installBalanceOfSystemCostTot </h4>
+<h4 id="operations_maintenance_replacement_cost_tot"> operationsMaintenanceReplacementCostTot </h4>
+<h4 id="capital_recovery_factor"> capitalRecoveryFactor </h4>
+<h4 id="n_batt_employed"> nBattEmployed </h4>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+</blockquote>
+
+<h3 id="optimal_solutions"> OptimalSolutions<small>(class)</small> </h3>
+<h4 id="pv_indexes"> pvIndexes </h4>
+<h4 id="batt_indexes"> battIndexes </h4>
+<h4 id="pv_kw"> pvKw </h4>
+<h4 id="batt_kwh"> battKwh </h4>
+<h4 id="loss_of_load_probabilities"> lossOfLoadProbabilities </h4>
+<h4 id="levelized_costs_of_energy"> levelizedCostsOfEnergy </h4>
+<h4 id="investment_costs"> investmentCosts </h4>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+</blockquote>
+
+
+
+
+</blockquote>
+
+
+
+
+<h2 id="plots"> Plots </h2>
+
+<h2 id="help_functions"> Help Functions </h2>
+
+
+</div>
+</body>
+</html>
