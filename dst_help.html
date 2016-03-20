@@ -30,6 +30,7 @@ h2 {color:Blue}
 <p><a href="#economic_analysis_outputs">change the placement of "Tot" as soon as it is replaced in the code.</a></p>
 <p> check if there are any comments from stefano or håkon that should be here </p>
 <p> think about whether the max output is an anomaly or a realistic value. Part of the data preprocessing part of the dst </p>
+<p><a href="#plot-power-balance"> Make a brutto power from PV plot </a> </p>
 
 <h3> Table of contents </h3>
 <ol>
@@ -45,12 +46,14 @@ h2 {color:Blue}
 <h3 id="solution_explorer"> solution_explorer </h3>
 
 <h2 id="modules"> Modules <font size="3"> <a href="#top"> (top) </a> </font> </h2>
+<blockquote>
 <h3 id="sapv-plant-simulation"> sapv_plant_simulation </h3>
 <p> This is the "Stand Alone PV Plant Simulation". It simulates the entire time series of the input data for every combination of PV and battery value, chosen as the simulation parameters. The module output is the class SimulationOutputs. Computational complexity O(n^3) (nHours*nPvSteps*nBattSteps) </p>
 <h3 id="economic-analysis"> economic_analysis </h3>
 <p> This module provide the economic calculations for the simulation results. The module output is the class EconomicAnalysisResults. The output matrices typically have one set of economic calculations for each PV and battery combination. Computation complexity O(n^2) (nPvSteps * nBattSteps)</p>
 <h3 id="llp-constrained-optimums"> llp_constrained_optimums </h3>
 <p> Finds the optimal values for each loss of load value in the llpSearcg span. For every spesific value of loss of load probability, the algorithm tries to find simulations with the same LLP and will then choose the one simulation with the lowest net present cost.</p>
+</blockquote>
 
 
 <!-- CLASSES AND PROPERTIES =================================-->
@@ -238,24 +241,40 @@ The probability that you will encounter lost load for each kW you wish to use. D
 
 <!-- Optimal Output --------------------------------------------------->
 <h3 id="optimal-solutions"> OptimalSolutions<small>(class)</small> </h3>
-A class for containing the optimal solutions. Arranged in arrays with solutions stored as they are found. Meaning that the first solution found will have the first 
+A class for containing the optimal solutions. Arranged in arrays with solutions stored as they are found. Meaning that the first solution found will have the first index in all the variables.
 <blockquote>
 <h4 id="pv-indexes"> pvIndexes </h4>
+<p>Refers to the corresponding index of the optimal solution in the original output matrixes. If pvIndexes(1) = 1, then the first iteration of the simulation was an optimal solution.</p>
 <h4 id="batt-indexes"> battIndexes </h4>
+<p>By the same logic as pvIndexes. To refer to a value corresponding to a optimal solution, one can use these variables. This way, SimOut.lossOfLoad(OptSol.pvIndexes, OptSol.battIndexes) == OptSol.lossOfLoadProbabilities.</p>
 <h4 id="pv-kw"> pvKw </h4>
+<p> The PV sizes of the optimal solutions </p>
 <h4 id="batt-kwh"> battKwh </h4>
+<p> The battery sizes of the optimal solutions </p>
 <h4 id="loss-of-load-probabilities"> lossOfLoadProbabilities </h4>
+<p> The loss of load probabilities of the optimal solutions is equal to SimOut.lossOfLoad(OptSol.pvIndexes, OptSol.battIndexes) </p>
 <h4 id="levelized-costs-of-energy"> levelizedCostsOfEnergy </h4>
+<p> The levelized cost of energy for each optimal solution. Is equal to EconomicOut.levelizedCostOfEnergy(OptSol.pvIndexes,OptSol.battIndexes).</p>
 <h4 id="investment-costs"> investmentCosts </h4>
+<p> The investment cost of each optimal solution. Is equal to EconomicOut.investmentCost(OptSol.pvIndexes, OptSol.battIndexes)</p>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 </blockquote>
 
 
 <h2 id="plots"> Plots </h2>
+The following section will describe the plotting functions available.
+<blockquote>
 <h3 id="plot-state-of-charge> plot_state_of_charge </h3>
+<p>Plots the normalized state of charge (wrt. battery size). The green line is overproduction which appears whenever the PV input to battery is larger than the battery max charge speed (kW). This plot enable inspection of the kWs that the battery fall short of supplying or absorbing. It also clearly illustrates occurences of lost load and overproduction in scale to the battery normal use.</p>
 <h3 id="plot-average-state-of-charge> plot_average_state_of_charge </h3>
+<p>Will plot an average day of the same principles as above. The problem with this is that the continuity between the battery, loss of load, and overproduction lines are not preserved, and hence will remove some of the scaled insight that the user experience from the time dependent plot.</p>
 <h3 id="plot-power-balance"> plot_power_balance </h3>
+<p> The power balance of the system with respect to the different power kWs directely available to load. This is refered to as net powers. Will allow inspection of the source of power to the load at any given time. The red line is covered by the blue line whenever the load is served. The yellow line illustrate the power from PV to the system. The integral of the yellow power from PV line wil always be equal to the integral of the blue supplied load line.</p>
 <h3 id="plot-average-power-balance"> plot_average_power_balance </h3>
+<p> Plots an average day of the principle mentioned above. Very useful for evaluating the average behaviour and performance of the simulated system </p>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+</blockquote>
+
 
 <h2 id="help_functions"> Help Functions </h2>
 
