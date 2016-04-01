@@ -25,9 +25,9 @@ h2 {color:Blue}
 <div align="left">
 
 <h3> TODOS: </h3>
-<p><a href="#power_derate"> find the unit of power derate ?/C </a></p>
-<p><a href="#economic_analysis_outputs"> mention the simulation outputs as a output from the biomass module</a></p>
-<p><a href="#economic_analysis_outputs">change the placement of "Tot" as soon as it is replaced in the code.</a></p>
+<p><a href="#power-derate"> find the unit of power derate ?/C </a></p>
+<p><a href="#economic-analysis-outputs"> mention the simulation outputs as a output from the biomass module</a></p>
+<p><a href="#economic-analysis-outputs">change the placement of "Tot" as soon as it is replaced in the code.</a></p>
 <p> check if there are any comments from stefano or håkon that should be here </p>
 <p> think about whether the max output is an anomaly or a realistic value. Part of the data preprocessing part of the dst </p>
 <p><a href="#plot-power-balance"> Make a brutto power from PV plot </a> </p>
@@ -60,7 +60,7 @@ h2 {color:Blue}
 <h2 id="classes-and-properties"> Classes and Properties <font size="3"> <a href="#top"> (top) </a> </font></h2>
 <p>All parameters, inputs and outputs are contained in classes. The classes allow for batch passing of variables, and offer some help functions for generating dependent variables. The classes also allow for more comprehensive naming, consistency and understanding the origin or relation of the variable. <b>The classes should be made pointers so that they are not copied between modules. This is not the case in the Matlab implementation but is the default behaviour of python</b></p>
 
-<!-- Simulation Parameters ------------------------------------>
+<!-- Simulation Parameters -->
 <h3 id="simulation-parameters">SimulatonParameters <small>(class)</small> </h3>
 <p>This class contain the parameters for setting the boundries and step size for the simulation PV and battery pairs in the simulation module, and LLPs for the llp_constrained_optimums module. All combinations of PV and battery simulate over the timespan of the input data sets. The resulting complexity of the DST is nPvSteps * nBattSteps * nHours.</p>
 <blockquote>
@@ -93,7 +93,7 @@ h2 {color:Blue}
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
-<!-- PV Parameters ----------------------------------------------->
+<!-- PV Parameters -->
 <h3 id="pv-parameters">PvParameters <small>(class)</small></h3>
 <p>Contains the physical parameters of the pv array and cells</p>
 <blockquote>
@@ -110,7 +110,7 @@ h2 {color:Blue}
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
-<!-- Battery Parameters ------------------------------------------>
+<!-- Battery Parameters -->
 <h3 id="battery-param"> BatteryParameters <small>(class)</small></h3>
 <p> This class contain the different physical parameters of the battery </p>
 <blockquote>
@@ -129,7 +129,7 @@ h2 {color:Blue}
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 </blockquote>
 
-<!-- Inverter Parameters ----------------------------------------->
+<!-- Inverter Parameters -->
 <h3 id="inverter-param"> Inverter Parameters <small>(class)</small></h3>
 <p> The physical parameters of the inverter </p>
 <blockquote>
@@ -138,7 +138,7 @@ h2 {color:Blue}
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
-<!-- Economic Parameters ---------------------------------------->
+<!-- Economic Parameters -->
 <h3 id="economic-parameters"> EconomicParameters <small>(class)</small></h3>
 <blockquote>
 <h4 id="budget"> budget </h4>
@@ -153,7 +153,7 @@ h2 {color:Blue}
 <p> The purchasing cost of the inverter wrt. the highest kW in the load profile. Meaning that the inverter is dimensioned for maximum load. Different from the other /kW parameters that we use. *Source: MCM_Energy Lab + prof. Silva exercise, POLIMI </p>
 <h4 id="operation-maintenance-cost"> operationMaintenanceCostKw </h4>
 <p> The operation and maintenance cost of the PV kW output capacity.</p>
-<h4 id="install-balance-of-system> installBalanceOfSystemCost </h4>
+<h4 id="install-balance-of-system"> installBalanceOfSystemCost </h4>
 <p> The cost of installing and balance of system as a percentage of the components total costs (investment cost) </p>
 <h4 id="plant-lifetime"> plantLifetime </h4>
 <p>The planned lifetime of the plant.</p>
@@ -162,7 +162,7 @@ h2 {color:Blue}
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
-<!-- Simulation Input Data --------------------------------------->
+<!-- Simulation Input Data -->
 <h3 id="simulation-input-data"> SimulationInputData <small>(class)</small></h3>
 <blockquote>
 <h4 id="load"> load </h4>
@@ -188,7 +188,7 @@ h2 {color:Blue}
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
-<!-- Simulation Outputs ----------------------------------------->
+<!-- Simulation Outputs -->
 <h3 id="simulation-outputs"> SimulationOutputs <small> (class) </small> </h3>
 The outputs from the sapv_plant_simulation module for battery and PV combinations.</p>
 <blockquote>
@@ -213,7 +213,7 @@ The probability that you will encounter lost load for each kW you wish to use. D
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 </blockquote>
 
-<!-- EconomicAnalysisOutputs ------------------------------------>
+<!-- EconomicAnalysisOutputs -->
 <h3 id="economic-analysis-outputs"> EconomicAnalysisOutputs <small>(class)</small> </h3>
 <p> The output class of the economic_analysis module <p>
 <blockquote>
@@ -239,7 +239,7 @@ The probability that you will encounter lost load for each kW you wish to use. D
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 </blockquote>
 
-<!-- Optimal Output --------------------------------------------------->
+<!-- Optimal Output -->
 <h3 id="optimal-solutions"> OptimalSolutions<small>(class)</small> </h3>
 A class for containing the optimal solutions. Arranged in arrays with solutions stored as they are found. Meaning that the first solution found will have the first index in all the variables.
 <blockquote>
