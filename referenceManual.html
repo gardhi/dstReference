@@ -13,36 +13,80 @@ h2 {color:Blue}
 
 <body>
 
+<div style="background-color:#ececec">
+<h3> TODOS: </h3>
+<p><a href="#power-derate"> find the unit of power derate ?/C </a></p>
+<p><a href="#economic-analysis-outputs"> mention the simulation outputs as a output from the biomass module</a></p>
+<p><a href="#economic-analysis-outputs">change the placement of "Tot" as soon as it is replaced in the code.</a></p>
+<p> This is a poorly explained todo point: "think about whether the max output is an anomaly or a realistic value. Part of the data preprocessing part of the dst" </p>
+<p><a href="#plot-power-balance"> Make a brutto power from PV plot </a> </p>
+<p> INCLUDE BIOMASS DOCUMENTATION </p> 
+</div>
+
+<hr /> &nbsp
 <div align="center">
 <h1 id="top"> Development Support Tool </h1>
 <h2>Reference Manual </h2>
 <p>by Gard Hillestad 2016</p>
 <hr />
 
-<small>This manual explains how to use the Development Support Tool (DST) developed by Stefano Mandelli, Håkon Duus and Gard Hillestad. Please refer to the table of contents. If better names are found for a parameter or variable, please feel free to edit, but remember to edit documentation aswell</small>
-
+<small>This manual explains how to use the Development Support Tool (DST) developed by Stefano Mandelli, Håkon Duus and Gard Hillestad. Please refer to the table of contents. If better names are found for a parameter or variable, please feel free to edit the code according to established coding practices - Always remember to edit documentation when changes has been made. The project can be cloned from <a href="http://www.github.com/gardhi/DST">http://www.github.com/gardhi/DST</a></small>
 </div>
-<div align="left">
-
-<h3> TODOS: </h3>
-<p><a href="#power-derate"> find the unit of power derate ?/C </a></p>
-<p><a href="#economic-analysis-outputs"> mention the simulation outputs as a output from the biomass module</a></p>
-<p><a href="#economic-analysis-outputs">change the placement of "Tot" as soon as it is replaced in the code.</a></p>
-<p> check if there are any comments from stefano or håkon that should be here </p>
-<p> think about whether the max output is an anomaly or a realistic value. Part of the data preprocessing part of the dst </p>
-<p><a href="#plot-power-balance"> Make a brutto power from PV plot </a> </p>
+<div align="left"> &nbsp 
 
 <h3> Table of contents </h3>
 <ol>
-<li><a href="#simulation-param"> Simulation Parameters </a>
-<ol>	<li> pvStartKw </li>
-	<li> pvStopKw </li>
-	</ol></li>
-<li><a href="#battery-param">Battery Parameters</a></li>
+<li><a href="#gui"> GUIs </a>
+	<ol>
+	<li><a href="#dst-gui"> dst_gui </a> </li>
+	<li><a href="#solution-explorer">solution_explorer </a></li>
+	</ol>
+</li>
+<li><a href="#modules"> Modules </a>
+	<ol>
+	<li><a href="#sapv-plant-simulation">sapv_plant_simulation</a></li>
+	<li><a href="#pvbiom-plant-simulation"> pvbiomass_plant_simulation</a></li>
+	<li><a href="#economic-analysis">economic_analysis</a></li>
+	<li><a href="#llp-constrained-optimums"> llp_constrained_optimums </a></li>
+	</ol>
+</li>
+<li><a href="#classes-and-properties"> Classes And Properties </a>
+	<ol>
+	<li><a href="#simulation-param"> Simulation Parameters </a>
+		<ol>
+		<li> <a href="#pv-start-kw"> pvStartKw </a></li>
+		<li> <a href="#pv-stop-kw"> pvStopKw </a></li>
+		<li> <a href="#pv-step-kw"> pvStepKw </a></li>
+		<li> <a href="#batt-start-kwh"> battStartKwh </a></li>
+		<li> <a href="#batt-stop-kwh"> battStopKwh </a></li>
+		<li> <a href="#batt-step-kwh"> battStepKwh </a></li>
+		<li> <a href="#llp-acceptance"> llpSearchAcceptance </a></li>
+		<li> <a href="#llp-start"> llpStart	</a></li>
+		<li> <a href="#llp-stop"> llpStop </a></li>
+		<li> <a href="#llp-step"> llpStep</a></li>
+		<li> <a href="#llp-targets"> llpSearchTargets </a></li>
+		<li> <a href="#n-pv-steps"> nPvSteps </a></li>
+		<li> <a href="#n-batt-steps"> nBattSteps </a></li>
+		</ol> 
+	</li>
+	<li><a href="#pv-parameters"> pvParameters </a>
+		<ol>
+		<li><a href="#balance-of-system"> balanceOfSystem </a></li>
+		<li><a href="#nominal-ambient-temperature"> nominalAmbientTemperatureC </a></li>
+		</ol>
+	</li>
+	</ol> 
+</li>
+<li><a href="#battery-param">Battery Parameters</a>
+</li>
 </ol>
+<p>...under construction</p>
+
 
 <h2 id="gui"> GUIs </h3>
-<h3 id="dst_gui"> dst_gui </h3>
+<p> Here follows explanaition of the different user interfaces that run the DST and how to use them. (How the GUIs are implemented will be explained at the bottom of the document.) <p> 
+
+<h3 id="dst-gui"> dst_gui </h3>
 <h3 id="solution_explorer"> solution_explorer </h3>
 
 <h2 id="modules"> Modules <font size="3"> <a href="#top"> (top) </a> </font> </h2>
@@ -64,32 +108,32 @@ h2 {color:Blue}
 <h3 id="simulation-parameters">SimulatonParameters <small>(class)</small> </h3>
 <p>This class contain the parameters for setting the boundries and step size for the simulation PV and battery pairs in the simulation module, and LLPs for the llp_constrained_optimums module. All combinations of PV and battery simulate over the timespan of the input data sets. The resulting complexity of the DST is nPvSteps * nBattSteps * nHours.</p>
 <blockquote>
-<h4 id="pv-start-kw"> pvStartKw </h4>
-<p>The lowest value of PV size that is simulated. The PV size is given in kW and not in a metric. The size for each kW varies over time and could be input in the PV parameters class, if features which require this metric are added.</p>
-<h4 id="pv-stop-kw"> pvStopKw </h4>
-<p>The maximum value that the simulation will pair with a battery size.</p>
-<h4 id="pv-step-kw"> pvStepKw </h4>
-<p>The step size between PV sizes in the given range from pvStartKw to pvStopKw. For wide searches, a large step size is recomended. Details become computationally expensive in wide searches.</p>
-<h4 id="batt-start-kwh"> battStartKwh </h4>
-<p>The lowest battery size simulated. The size of battery is given in kWh capacity.</p>
-<h4 id="batt-stop-kwh"> battStopKwh </h4>
-<p> The maximum size battery that is simulated.</p>
-<h4 id="batt-step-kwh"> battStepKw</h4>
-<p> The step size that determine the number of battery sizes between battStartKwh and battStopKwh simulated.</p>
-<h4 id="llp-acceptance"> llpSearchAcceptance </h4>
-<p> Used in the llp_constrained_optimums module, there is a range of llp values that the algorithm try to find in the simulation results. This value sets the acceptance interval for each value step.</p>
-<h4 id="llp-start"> llpStart </h4>
-<p>The lowest value of loss of load probabilities that the module tries to find a match for in the simulation outputs.</p>
-<h4 id="llp-stop> llpStop </h4>
-<p>The highest value of loss of load probabilities that the algorithm that the module tries to find a match for in the simulation outputs.</p>
-<h4 id="llp-step> llpStep </h4>
-<p>The step size that determine the resolution of the search for loss of load probabilities. This step size does not affect the computation speed much as it has complexity O(n) and can be set reasonably small if desired.</p>
-<h4 id="llp-targets"> llpSearchTargets </h4>
-<p>This variable collects previous variables into one array, generated the following way llpStart:llpStep:llpStop</p>
-<h4 id="n-pv-steps"> nPvSteps </h4>
-<p>Keeps track of the total number of PV sizes simulated. Automatically generated upon initiation.</p>
-<h4 id="n-batt-steps"> nBattSteps </h4>
-<p>Keeps track of the total number of battery sizes simulated. Automatically generated upon initiation.</p>
+	<h4 id="pv-start-kw"> pvStartKw </h4>
+	<p>The lowest value of PV size that is simulated. The PV size is given in kW and not in a metric. The size for each kW varies over time and could be input in the PV parameters class, if features which require this metric are added.</p>
+	<h4 id="pv-stop-kw"> pvStopKw </h4>
+	<p>The maximum value that the simulation will pair with a battery size.</p>
+	<h4 id="pv-step-kw"> pvStepKw </h4>
+	<p>The step size between PV sizes in the given range from pvStartKw to pvStopKw. For wide searches, a large step size is recomended. Details become computationally expensive in wide searches.</p>
+	<h4 id="batt-start-kwh"> battStartKwh </h4>
+	<p>The lowest battery size simulated. The size of battery is given in kWh capacity.</p>
+	<h4 id="batt-stop-kwh"> battStopKwh </h4>
+	<p> The maximum size battery that is simulated.</p>
+	<h4 id="batt-step-kwh"> battStepKw</h4>
+	<p> The step size that determine the number of battery sizes between battStartKwh and battStopKwh simulated.</p>
+	<h4 id="llp-acceptance"> llpSearchAcceptance </h4>
+	<p> Used in the llp_constrained_optimums module, there is a range of llp values that the algorithm try to find in the simulation results. This value sets the acceptance interval for each value step.</p>
+	<h4 id="llp-start"> llpStart </h4>
+	<p>The lowest value of loss of load probabilities that the module tries to find a match for in the simulation outputs.</p>
+	<h4 id="llp-stop"> llpStop </h4>
+	<p>The highest value of loss of load probabilities that the algorithm that the module tries to find a match for in the simulation outputs.</p>
+	<h4 id="llp-step"> llpStep </h4>
+	<p>The step size that determine the resolution of the search for loss of load probabilities. This step size does not affect the computation speed much as it has complexity O(n) and can be set reasonably small if desired.</p>
+	<h4 id="llp-targets"> llpSearchTargets </h4>
+	<p>This variable collects previous variables into one array, generated the following way llpStart:llpStep:llpStop</p>
+	<h4 id="n-pv-steps"> nPvSteps </h4>
+	<p>Keeps track of the total number of PV sizes simulated. Automatically generated upon initiation.</p>
+	<h4 id="n-batt-steps"> nBattSteps </h4>
+	<p>Keeps track of the total number of battery sizes simulated. Automatically generated upon initiation.</p>
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
@@ -97,16 +141,16 @@ h2 {color:Blue}
 <h3 id="pv-parameters">PvParameters <small>(class)</small></h3>
 <p>Contains the physical parameters of the pv array and cells</p>
 <blockquote>
-<h4 id="balance-of-system"> balanceOfSystem </h4>
-<p> A collection of factors that will make the PV less efficient. Among these factors are soiling of the panels, wiring losses, shading, snow cover, aging and so on </p>
-<h4 id="nominal-ambient-temperature"> nominalAmbientTemperatureC </h4>
-<p> The nominal ambient (air) test-temperature in the suroundings of the PV. Given in celsius.</p>
-<h4 id="nominal-cell-temperature"> nominalCellTemperatureC </h4>
-<p> The nominal operating cell temperature when exposed to irradiation. Given in celsius.</p>
-<h4 id="nominal-irradiation"> nominalIrradiation </h4>
-<p> The nominal irradiation exposure level of the PV. Given in kW per square fot. (kW/m^2) </p>
-<h4 id="power-derate"> powerDerateDueTemperature </h4>
-<p> The expected loss of power due to difference from nominal cell temperature. </p>
+	<h4 id="balance-of-system"> balanceOfSystem </h4>
+	<p> A collection of factors that will make the PV less efficient. Among these factors are soiling of the panels, wiring losses, shading, snow cover, aging and so on </p>
+	<h4 id="nominal-ambient-temperature"> nominalAmbientTemperatureC </h4>
+	<p> The nominal ambient (air) test-temperature in the suroundings of the PV. Given in celsius.</p>
+	<h4 id="nominal-cell-temperature"> nominalCellTemperatureC </h4>
+	<p> The nominal operating cell temperature when exposed to irradiation. Given in celsius.</p>
+	<h4 id="nominal-irradiation"> nominalIrradiation </h4>
+	<p> The nominal irradiation exposure level of the PV. Given in kW per square fot. (kW/m^2) </p>
+	<h4 id="power-derate"> powerDerateDueTemperature </h4>
+	<p> The expected loss of power due to difference from nominal cell temperature. </p>
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
@@ -114,77 +158,77 @@ h2 {color:Blue}
 <h3 id="battery-param"> BatteryParameters <small>(class)</small></h3>
 <p> This class contain the different physical parameters of the battery </p>
 <blockquote>
-<h4 id="min-soc"> minimumStateOfCharge </h4>
-<p> The maximum discharge percentage that the battery allow. Depending on the individual battery's depth of charge vs. cycles to failure function this should be set to optimize the lifetime of the battery</p>
-<h4 id="init-soc"> initialStateOfCharge </h4>
-<p> The state of charge at t = 0</p>
-<h4 id="charging-efficiency"> chargingEfficiency </h4>
-<p> The percentage of power imposed on the battery that end up in the battery as potential power</p>
-<h4 id="discharging-efficiency"> dischargingEfficiency </h4>
-<p> The percentage of potential power that is output as usefull power from the battery </p>
-<h4 id="power-energy-ratio"> powerEnergyRatio </h4>
-<p> The kW charging/discharging power possible, given a energy level in the battery in kWh. For example, a battery with powerEnergyRatio = 0.5 can maximum output 50 kW if the energy level is at 100 kWh. </p>
-<h4 id="max-operational-years"> maxOperationalYears </h4>
-<p> The maximum number of years that the battery can stay operational before replacement. Independent of how the battery is used. </p>
-<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+	<h4 id="min-soc"> minimumStateOfCharge </h4>
+	<p> The maximum discharge percentage that the battery allow. Depending on the individual battery's depth of charge vs. cycles to failure function this should be set to optimize the lifetime of the battery</p>
+	<h4 id="init-soc"> initialStateOfCharge </h4>
+	<p> The state of charge at t = 0</p>
+	<h4 id="charging-efficiency"> chargingEfficiency </h4>
+	<p> The percentage of power imposed on the battery that end up in the battery as potential power</p>
+	<h4 id="discharging-efficiency"> dischargingEfficiency </h4>
+	<p> The percentage of potential power that is output as usefull power from the battery </p>
+	<h4 id="power-energy-ratio"> powerEnergyRatio </h4>
+	<p> The kW charging/discharging power possible, given a energy level in the battery in kWh. For example, a battery with powerEnergyRatio = 0.5 can maximum output 50 kW if the energy level is at 100 kWh. </p>
+	<h4 id="max-operational-years"> maxOperationalYears </h4>
+	<p> The maximum number of years that the battery can stay operational before replacement. Independent of how the battery is used. </p>
 </blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <!-- Inverter Parameters -->
 <h3 id="inverter-param"> Inverter Parameters <small>(class)</small></h3>
 <p> The physical parameters of the inverter </p>
 <blockquote>
-<h4 id="efficiency"> efficiency </h4>
-<p> The efficiency of the inverter. the percentage of output power wrt. input power. </p>
+	<h4 id="efficiency"> efficiency </h4>
+	<p> The efficiency of the inverter. the percentage of output power wrt. input power. </p>
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <!-- Economic Parameters -->
 <h3 id="economic-parameters"> EconomicParameters <small>(class)</small></h3>
 <blockquote>
-<h4 id="budget"> budget </h4>
-<p> The available money for the project. This variable is unused in the modules </p>
-<h4 id="pv-cost-kw"> pvCostKw </h4>
-<p> The variable purchasing cost of PV output kW capacity. *Source: Uganda data. </p>
-<h4 id="batt-cost-kwh"> battCostKwh </h4>
-<p> The variable purchasing cost of battery kWh capacity.</p>
-<h4 id="batt-cost-fixed"> battCostFixed </h4>
-<p> The fixed cost for purchasing batteries. For transportation or one time payments or manufacturing fixed cost.</p>
-<h4 id="inverter-cost-kw"> inverterCostKw </h4>
-<p> The purchasing cost of the inverter wrt. the highest kW in the load profile. Meaning that the inverter is dimensioned for maximum load. Different from the other /kW parameters that we use. *Source: MCM_Energy Lab + prof. Silva exercise, POLIMI </p>
-<h4 id="operation-maintenance-cost"> operationMaintenanceCostKw </h4>
-<p> The operation and maintenance cost of the PV kW output capacity.</p>
-<h4 id="install-balance-of-system"> installBalanceOfSystemCost </h4>
-<p> The cost of installing and balance of system as a percentage of the components total costs (investment cost) </p>
-<h4 id="plant-lifetime"> plantLifetime </h4>
-<p>The planned lifetime of the plant.</p>
-<h4 id="interest-rate"> interestRate</h4>
-<p> The interest rate *defined in HOMER: nominal rate - inflation</p>
+	<h4 id="budget"> budget </h4>
+	<p> The available money for the project. This variable is unused in the modules </p>
+	<h4 id="pv-cost-kw"> pvCostKw </h4>
+	<p> The variable purchasing cost of PV output kW capacity. *Source: Uganda data. </p>
+	<h4 id="batt-cost-kwh"> battCostKwh </h4>
+	<p> The variable purchasing cost of battery kWh capacity.</p>
+	<h4 id="batt-cost-fixed"> battCostFixed </h4>
+	<p> The fixed cost for purchasing batteries. For transportation or one time payments or manufacturing fixed cost.</p>
+	<h4 id="inverter-cost-kw"> inverterCostKw </h4>
+	<p> The purchasing cost of the inverter wrt. the highest kW in the load profile. Meaning that the inverter is dimensioned for maximum load. Different from the other /kW parameters that we use. *Source: MCM_Energy Lab + prof. Silva exercise, POLIMI </p>
+	<h4 id="operation-maintenance-cost"> operationMaintenanceCostKw </h4>
+	<p> The operation and maintenance cost of the PV kW output capacity.</p>
+	<h4 id="install-balance-of-system"> installBalanceOfSystemCost </h4>
+	<p> The cost of installing and balance of system as a percentage of the components total costs (investment cost) </p>
+	<h4 id="plant-lifetime"> plantLifetime </h4>
+	<p>The planned lifetime of the plant.</p>
+	<h4 id="interest-rate"> interestRate</h4>
+	<p> The interest rate *defined in HOMER: nominal rate - inflation</p>
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <!-- Simulation Input Data -->
 <h3 id="simulation-input-data"> SimulationInputData <small>(class)</small></h3>
 <blockquote>
-<h4 id="load"> load </h4>
-<p> The load profile of the entire timespan. Current resolution at hour intervals. This makes each point both a kWh and kW measure.</p>
-<h4 id="irradiation"> irradiation </h4>
-<p> The irradiation of the entire timespan. Hourly resolution.</p>
-<h4 id="temperature"> temperature </h4>
-<p> The surface temperature of the entire timespan in celsius. Hourly resolution</p>
-<h4 id="n-hours"> nHours </h4>
-<p> The span of the input data in hours. Generated automatically at initiation</p>
-<h4 id="n-years"> nYears </h4>
-<p> The span of the input data in years. Generated automatically at initiation </p>
-<h4 id="irradiation-filename"> irradiationFilename </h4>
-<p> The filename of the irradiation data file. </p>
-<h4 id="load-profile-filename"> loadProfileFilename </h4>
-<p> The filename of the load profile data file </p>
-<h4 id="temperature-filename"> temperatureFilename </h4>
-<p> The filename of the temperature data file </p>
-<h4 id="folder-name"> folderName </h4>
-<p> The folder name containing the desired data set </p>
-<h4 id="database-path"> databasePath </h4>
-<p> The path of the database in which the different folders of data sets are stored. Generated automatically upon initiation </p>S
+	<h4 id="load"> load </h4>
+	<p> The load profile of the entire timespan. Current resolution at hour intervals. This makes each point both a kWh and kW measure.</p>
+	<h4 id="irradiation"> irradiation </h4>
+	<p> The irradiation of the entire timespan. Hourly resolution.</p>
+	<h4 id="temperature"> temperature </h4>
+	<p> The surface temperature of the entire timespan in celsius. Hourly resolution</p>
+	<h4 id="n-hours"> nHours </h4>
+	<p> The span of the input data in hours. Generated automatically at initiation</p>
+	<h4 id="n-years"> nYears </h4>
+	<p> The span of the input data in years. Generated automatically at initiation </p>
+	<h4 id="irradiation-filename"> irradiationFilename </h4>
+	<p> The filename of the irradiation data file. </p>
+	<h4 id="load-profile-filename"> loadProfileFilename </h4>
+	<p> The filename of the load profile data file </p>
+	<h4 id="temperature-filename"> temperatureFilename </h4>
+	<p> The filename of the temperature data file </p>
+	<h4 id="folder-name"> folderName </h4>
+	<p> The folder name containing the desired data set </p>
+	<h4 id="database-path"> databasePath </h4>
+	<p> The path of the database in which the different folders of data sets are stored. Generated automatically upon initiation </p>S
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
@@ -192,91 +236,95 @@ h2 {color:Blue}
 <h3 id="simulation-outputs"> SimulationOutputs <small> (class) </small> </h3>
 The outputs from the sapv_plant_simulation module for battery and PV combinations.</p>
 <blockquote>
-<h4 id="pv-power-absorbed"> pvPowerAbsorbed</h4>
-<p> The potential power that the PV absorb from the sun.</p>
-<h4 id="needed-batt-output"> neededBattOutputKw</h4>
-<p> The load demand on the batteries. If the PV does not supply enough power to serve the load, the battery will have to output power. If this variable is negative it means that the load has been served by the PV and that there is more power available. If the battery is not full, it will use this to charge.
-<h4 id="batt-output-kw"> battOutputKw </h4>
-The actual output power of the battery to serve the load. This is the change of the battery potential energy and is subject to losses like discharge efficiency and inverter efficiency.</p>
-<h4 id="loss-of-load"> lossOfLoad </h4>
-<p> The kW that are not met by the system. Whenever the system hass lost load, this value will describe the difference between the needed output and the available output.</p>
-<h4 id="loss-of-load-tot"> lossOfLoadTot </h4>
-<p> The summed up loss of load of a simulation.</p>
-<h4 id="loss-of-load-probability"> lossOfLoadProbability </h4>
-The probability that you will encounter lost load for each kW you wish to use. Defined as sum(lossOfLoad)/sum(load)</p>
-<h4 id="pv-power-absorbed-unused"> pvPowerAbsorbedUnused </h4>
-<p> The power that is not utilized from the PV. This happens in two ways: either the battery is full already, or the battery is unable to charge fast enough. </p>
-<h4 id="state-of-charge"> stateOfCharge </h4>
-<p> Describes the percentage battery charge level over the simulation </p>
-<h4 id="sum_partial_cycles_used"> sumPartialCyclesUsed </h4>
-<p> From the rainflow counting algorithm. Any depth of discharge can be repeated a number of times before the battery fails. When the battery starts charging again after discharging. The cycles_to_failure algorithm calculates how many cycles the current depth of discharge would allow nCycles, then it counts the partial cycle used as + 1/nCycles. When this variable is ==1, the battery has spent all it's partial cycles during the simulation time.</p>
-<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+	<h4 id="pv-power-absorbed"> pvPowerAbsorbed</h4>
+	<p> The potential power that the PV absorb from the sun.</p>
+	<h4 id="needed-batt-output"> neededBattOutputKw</h4>
+	<p> The load demand on the batteries. If the PV does not supply enough power to serve the load, the battery will have to output power. If this variable is negative it means that the load has been served by the PV and that there is more power available. If the battery is not full, it will use this to charge.
+	<h4 id="batt-output-kw"> battOutputKw </h4>
+	The actual output power of the battery to serve the load. This is the change of the battery potential energy and is subject to losses like discharge efficiency and inverter efficiency.</p>
+	<h4 id="loss-of-load"> lossOfLoad </h4>
+	<p> The kW that are not met by the system. Whenever the system hass lost load, this value will describe the difference between the needed output and the available output.</p>
+	<h4 id="loss-of-load-tot"> lossOfLoadTot </h4>
+	<p> The summed up loss of load of a simulation.</p>
+	<h4 id="loss-of-load-probability"> lossOfLoadProbability </h4>
+	The probability that you will encounter lost load for each kW you wish to use. Defined as sum(lossOfLoad)/sum(load)</p>
+	<h4 id="pv-power-absorbed-unused"> pvPowerAbsorbedUnused </h4>
+	<p> The power that is not utilized from the PV. This happens in two ways: either the battery is full already, or the battery is unable to charge fast enough. </p>
+	<h4 id="state-of-charge"> stateOfCharge </h4>
+	<p> Describes the percentage battery charge level over the simulation </p>
+	<h4 id="sum_partial_cycles_used"> sumPartialCyclesUsed </h4>
+	<p> From the rainflow counting algorithm. Any depth of discharge can be repeated a number of times before the battery fails. When the battery starts charging again after discharging. The cycles_to_failure algorithm calculates how many cycles the current depth of discharge would allow nCycles, then it counts the partial cycle used as + 1/nCycles. When this variable is ==1, the battery has spent all it's partial cycles during the simulation time.</p>
 </blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <!-- EconomicAnalysisOutputs -->
 <h3 id="economic-analysis-outputs"> EconomicAnalysisOutputs <small>(class)</small> </h3>
 <p> The output class of the economic_analysis module <p>
 <blockquote>
-<h4 id="investment-cost"> investmentCost </h4>
-</p> The investment that needs to be payd initially. This includes components cost at t=0 and the installation cost. This also accounts for balance of system, the reason of which is unclear but it is batched with installment cost on the implementation level.</p>
-<h4 id="net-present-cost"> netPresentCost </h4>
-<p> The total cost of the system after investment and yearly maintenance and replacement costs through the lifetime of the system. Also accounts for salvage refund of battery as they might have remaining lifetime. </p>
-<h4 id="levelized-cost-of-energy"> levelizedCostOfEnergy </h4>
-<p> The cost per kWh supplied by the system over the simulation period. This is important because we want the microgrid to be competitive with the grid prices. We want to 1. justify the investment, and 2. be able to sell power to the grid if need be.</p>
-<h4 id="batt-cost-tot"> battCostTot </h4>
-<p> The total purchasing cost of the batteries at installation. Does not account for the replacement net present costs. </p>
-<h4 id="inverter-cost-tot"> inverterCostTot </h4>
-<p> The inverter total purchasing cost at installation. Does not account for the replacement net present cost (is replaced at halfway of plant lifetime)</p>
-<h4 id="pv-cost-tot"> pvCostTot </h4>
-<p> The purchasing total cost of the PV </p>
-<h4 id="install-balance-of-system-cost-tot"> installBalanceOfSystemCostTot </h4>
-<p> The part of the component investment cost that accounts for installation and balance of system costs.</p>
-<h4 id="operations-maintenance-replacement-cost-tot"> operationsMaintenanceReplacementCostTot </h4>
-<p> The resulting net present cost of maintaining and operating the plant throughout the plants lifetime.</p>
-<h4 id="capital-recovery-factor"> capitalRecoveryFactor </h4>
-<p> A way of accounting for the cost of capital. Can be investigated closer <a href="http://www.investopedia.com/terms/c/capital-recovery.asp?layout=orig"> here </a>. This is used when calculating the LCoE </p>
-<h4 id="n-batt-employed"> nBattEmployed </h4>
-<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+	<h4 id="investment-cost"> investmentCost </h4>
+	</p> The investment that needs to be payd initially. This includes components cost at t=0 and the installation cost. This also accounts for balance of system, the reason of which is unclear but it is batched with installment cost on the implementation level.</p>
+	<h4 id="net-present-cost"> netPresentCost </h4>
+	<p> The total cost of the system after investment and yearly maintenance and replacement costs through the lifetime of the system. Also accounts for salvage refund of battery as they might have remaining lifetime. </p>
+	<h4 id="levelized-cost-of-energy"> levelizedCostOfEnergy </h4>
+	<p> The cost per kWh supplied by the system over the simulation period. This is important because we want the microgrid to be competitive with the grid prices. We want to 1. justify the investment, and 2. be able to sell power to the grid if need be.</p>
+	<h4 id="batt-cost-tot"> battCostTot </h4>
+	<p> The total purchasing cost of the batteries at installation. Does not account for the replacement net present costs. </p>
+	<h4 id="inverter-cost-tot"> inverterCostTot </h4>
+	<p> The inverter total purchasing cost at installation. Does not account for the replacement net present cost (is replaced at halfway of plant lifetime)</p>
+	<h4 id="pv-cost-tot"> pvCostTot </h4>
+	<p> The purchasing total cost of the PV </p>
+	<h4 id="install-balance-of-system-cost-tot"> installBalanceOfSystemCostTot </h4>
+	<p> The part of the component investment cost that accounts for installation and balance of system costs.</p>
+	<h4 id="operations-maintenance-replacement-cost-tot"> operationsMaintenanceReplacementCostTot </h4>
+	<p> The resulting net present cost of maintaining and operating the plant throughout the plants lifetime.</p>
+	<h4 id="capital-recovery-factor"> capitalRecoveryFactor </h4>
+	<p> A way of accounting for the cost of capital. Can be investigated closer <a href="http://www.investopedia.com/terms/c/capital-recovery.asp?layout=orig"> here </a>. This is used when calculating the LCoE </p>
+	<h4 id="n-batt-employed"> nBattEmployed </h4>
 </blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <!-- Optimal Output -->
 <h3 id="optimal-solutions"> OptimalSolutions<small>(class)</small> </h3>
 A class for containing the optimal solutions. Arranged in arrays with solutions stored as they are found. Meaning that the first solution found will have the first index in all the variables.
 <blockquote>
-<h4 id="pv-indexes"> pvIndexes </h4>
-<p>Refers to the corresponding index of the optimal solution in the original output matrixes. If pvIndexes(1) = 1, then the first iteration of the simulation was an optimal solution.</p>
-<h4 id="batt-indexes"> battIndexes </h4>
-<p>By the same logic as pvIndexes. To refer to a value corresponding to a optimal solution, one can use these variables. This way, SimOut.lossOfLoad(OptSol.pvIndexes, OptSol.battIndexes) == OptSol.lossOfLoadProbabilities.</p>
-<h4 id="pv-kw"> pvKw </h4>
-<p> The PV sizes of the optimal solutions </p>
-<h4 id="batt-kwh"> battKwh </h4>
-<p> The battery sizes of the optimal solutions </p>
-<h4 id="loss-of-load-probabilities"> lossOfLoadProbabilities </h4>
-<p> The loss of load probabilities of the optimal solutions is equal to SimOut.lossOfLoad(OptSol.pvIndexes, OptSol.battIndexes) </p>
-<h4 id="levelized-costs-of-energy"> levelizedCostsOfEnergy </h4>
-<p> The levelized cost of energy for each optimal solution. Is equal to EconomicOut.levelizedCostOfEnergy(OptSol.pvIndexes,OptSol.battIndexes).</p>
-<h4 id="investment-costs"> investmentCosts </h4>
-<p> The investment cost of each optimal solution. Is equal to EconomicOut.investmentCost(OptSol.pvIndexes, OptSol.battIndexes)</p>
-<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+	<h4 id="pv-indexes"> pvIndexes </h4>
+	<p>Refers to the corresponding index of the optimal solution in the original output matrixes. If pvIndexes(1) = 1, then the first iteration of the simulation was an optimal solution.</p>
+	<h4 id="batt-indexes"> battIndexes </h4>
+	<p>By the same logic as pvIndexes. To refer to a value corresponding to a optimal solution, one can use these variables. This way, SimOut.lossOfLoad(OptSol.pvIndexes, OptSol.battIndexes) == OptSol.lossOfLoadProbabilities.</p>
+	<h4 id="pv-kw"> pvKw </h4>
+	<p> The PV sizes of the optimal solutions </p>
+	<h4 id="batt-kwh"> battKwh </h4>
+	<p> The battery sizes of the optimal solutions </p>
+	<h4 id="loss-of-load-probabilities"> lossOfLoadProbabilities </h4>
+	<p> The loss of load probabilities of the optimal solutions is equal to SimOut.lossOfLoad(OptSol.pvIndexes, OptSol.battIndexes) </p>
+	<h4 id="levelized-costs-of-energy"> levelizedCostsOfEnergy </h4>
+	<p> The levelized cost of energy for each optimal solution. Is equal to EconomicOut.levelizedCostOfEnergy(OptSol.pvIndexes,OptSol.battIndexes).</p>
+	<h4 id="investment-costs"> investmentCosts </h4>
+	<p> The investment cost of each optimal solution. Is equal to EconomicOut.investmentCost(OptSol.pvIndexes, OptSol.battIndexes)</p>
 </blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 
 <h2 id="plots"> Plots </h2>
 The following section will describe the plotting functions available.
 <blockquote>
-<h3 id="plot-state-of-charge> plot_state_of_charge </h3>
-<p>Plots the normalized state of charge (wrt. battery size). The green line is overproduction which appears whenever the PV input to battery is larger than the battery max charge speed (kW). This plot enable inspection of the kWs that the battery fall short of supplying or absorbing. It also clearly illustrates occurences of lost load and overproduction in scale to the battery normal use.</p>
-<h3 id="plot-average-state-of-charge> plot_average_state_of_charge </h3>
-<p>Will plot an average day of the same principles as above. The problem with this is that the continuity between the battery, loss of load, and overproduction lines are not preserved, and hence will remove some of the scaled insight that the user experience from the time dependent plot.</p>
-<h3 id="plot-power-balance"> plot_power_balance </h3>
-<p> The power balance of the system with respect to the different power kWs directely available to load. This is refered to as net powers. Will allow inspection of the source of power to the load at any given time. The red line is covered by the blue line whenever the load is served. The yellow line illustrate the power from PV to the system. The integral of the yellow power from PV line wil always be equal to the integral of the blue supplied load line.</p>
-<h3 id="plot-average-power-balance"> plot_average_power_balance </h3>
-<p> Plots an average day of the principle mentioned above. Very useful for evaluating the average behaviour and performance of the simulated system </p>
-<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+	<h3 id="plot-state-of-charge> plot_state_of_charge </h3>
+	<p>Plots the normalized state of charge (wrt. battery size). The green line is overproduction which appears whenever the PV input to battery is larger than the battery max charge speed (kW). This plot enable inspection of the kWs that the battery fall short of supplying or absorbing. It also clearly illustrates occurences of lost load and overproduction in scale to the battery normal use.</p>
+	<h3 id="plot-average-state-of-charge> plot_average_state_of_charge </h3>
+	<p>Will plot an average day of the same principles as above. The problem with this is that the continuity between the battery, loss of load, and overproduction lines are not preserved, and hence will remove some of the scaled insight that the user experience from the time dependent plot.</p>
+	<h3 id="plot-power-balance"> plot_power_balance </h3>
+	<p> The power balance of the system with respect to the different power kWs directely available to load. This is refered to as net powers. Will allow inspection of the source of power to the load at any given time. The red line is covered by the blue line whenever the load is served. The yellow line illustrate the power from PV to the system. The integral of the yellow power from PV line wil always be equal to the integral of the blue supplied load line.</p>
+	<h3 id="plot-average-power-balance"> plot_average_power_balance </h3>
+	<p> Plots an average day of the principle mentioned above. Very useful for evaluating the average behaviour and performance of the simulated system </p>
 </blockquote>
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 
 <h2 id="help_functions"> Help Functions </h2>
+
+<h2 id="about-gui-implementation"> About the GUI implementations </h2>
+<p> Note that the structure of the GUI is more quickly made than the modules, as the GUI will be completely rewritten in another language, the look and functionality is the example that successors will benefit the most from. </p>
+<p> All the GUIs are implemented with two superior structures for keeping variables. The 'Set' struct keeps track of all the values that go from the GUI to the matlab workspace</p>
 
 
 </div>
