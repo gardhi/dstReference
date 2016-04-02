@@ -83,8 +83,8 @@ h2 {color:Blue}
 <p>...under construction</p>
 
 
-<h2 id="gui"> GUIs </h3>
-<p> Here follows explanaition of the different user interfaces that run the DST and how to use them. (How the GUIs are implemented will be explained at the bottom of the document.) <p> 
+<h2 id="gui"> GUIs </h2>
+<p> Here follows explanaition of the different user interfaces that run the DST and how to use them. (How the GUIs are implemented will be explained at the bottom of the document.) </p> 
 
 <h3 id="dst-gui"> dst_gui </h3>
 <h3 id="solution_explorer"> solution_explorer </h3>
@@ -93,8 +93,14 @@ h2 {color:Blue}
 <blockquote>
 <h3 id="sapv-plant-simulation"> sapv_plant_simulation </h3>
 <p> This is the "Stand Alone PV Plant Simulation". It simulates the entire time series of the input data for every combination of PV and battery value, chosen as the simulation parameters. The module output is the class SimulationOutputs. Computational complexity O(n^3) (nHours*nPvSteps*nBattSteps) </p>
+<p>The system works roughly as follows: The load is covered by the irradiation input from the PV array, pvPowerAbsorbedKw, if there is more power left, it goes to the battery, when there is insufficient, the battery will cover the load (if it has enough charge). For each cycle, at least 8 hours between, the algorithm detects the depth of discharge and calculate the partial wear on the battery (more on this in the simulation outputs, and partial cycles), what is important to note is that this wear on the battery is the basically the only result used for the economic analysis.</p>
+<h3 id="pvbiomass-plant-simulation"> pv_biomass_simulation </h3>
+<p> An adaption of pv_plant_simulation to incude the utilization of a biomass generator parallell to the system. Since there is a wide variation of biomass generators available, the implementation is as generall as possible so that each systems functionality can be implicitly included (ex. the biomass has a kw units, so that convertion is user defined. The startup delay implies a generic implementation of generator type, and types of operation strategy [automatic/manual]) </p>
+<p> The biomass generator turns ON: If there is a loss of load occurence and the delay has passed OR if the isPreemptive mode is chosen and there is an assumed predictable cloudy day.</p>
+<p> The biomass generator turns OFF: If there is no available biomass/fuel OR if the battery is fully charged OR if the lossOfLoad is too large OR if there is a assumed predictable sunny day ahead.</p>
 <h3 id="economic-analysis"> economic_analysis </h3>
 <p> This module provide the economic calculations for the simulation results. The module output is the class EconomicAnalysisResults. The output matrices typically have one set of economic calculations for each PV and battery combination. Computation complexity O(n^2) (nPvSteps * nBattSteps)</p>
+<p>The analysis does roughly the following: figures out the costs depending on the different system sizes, these depend on the simulation parameters (except inverter). Then the wear on the battery in sumPartialCyclesUsed yield how many times the batteries must be replaced, and the cost of this.</p>
 <h3 id="llp-constrained-optimums"> llp_constrained_optimums </h3>
 <p> Finds the optimal values for each loss of load value in the llpSearcg span. For every spesific value of loss of load probability, the algorithm tries to find simulations with the same LLP and will then choose the one simulation with the lowest net present cost.</p>
 </blockquote>
@@ -104,6 +110,7 @@ h2 {color:Blue}
 <h2 id="classes-and-properties"> Classes and Properties <font size="3"> <a href="#top"> (top) </a> </font></h2>
 <p>All parameters, inputs and outputs are contained in classes. The classes allow for batch passing of variables, and offer some help functions for generating dependent variables. The classes also allow for more comprehensive naming, consistency and understanding the origin or relation of the variable. <b>The classes should be made pointers so that they are not copied between modules. This is not the case in the Matlab implementation but is the default behaviour of python</b></p>
 
+<blockquote>
 <!-- Simulation Parameters -->
 <h3 id="simulation-parameters">SimulatonParameters <small>(class)</small> </h3>
 <p>This class contain the parameters for setting the boundries and step size for the simulation PV and battery pairs in the simulation module, and LLPs for the llp_constrained_optimums module. All combinations of PV and battery simulate over the timespan of the input data sets. The resulting complexity of the DST is nPvSteps * nBattSteps * nHours.</p>
@@ -234,7 +241,7 @@ h2 {color:Blue}
 
 <!-- Simulation Outputs -->
 <h3 id="simulation-outputs"> SimulationOutputs <small> (class) </small> </h3>
-The outputs from the sapv_plant_simulation module for battery and PV combinations.</p>
+<p>The outputs from the sapv_plant_simulation module for battery and PV combinations.</p>
 <blockquote>
 	<h4 id="pv-power-absorbed"> pvPowerAbsorbed</h4>
 	<p> The potential power that the PV absorb from the sun.</p>
@@ -259,7 +266,7 @@ The outputs from the sapv_plant_simulation module for battery and PV combination
 
 <!-- EconomicAnalysisOutputs -->
 <h3 id="economic-analysis-outputs"> EconomicAnalysisOutputs <small>(class)</small> </h3>
-<p> The output class of the economic_analysis module <p>
+<p> The output class of the economic_analysis module </p>
 <blockquote>
 	<h4 id="investment-cost"> investmentCost </h4>
 	</p> The investment that needs to be payd initially. This includes components cost at t=0 and the installation cost. This also accounts for balance of system, the reason of which is unclear but it is batched with installment cost on the implementation level.</p>
@@ -302,6 +309,8 @@ A class for containing the optimal solutions. Arranged in arrays with solutions 
 	<h4 id="investment-costs"> investmentCosts </h4>
 	<p> The investment cost of each optimal solution. Is equal to EconomicOut.investmentCost(OptSol.pvIndexes, OptSol.battIndexes)</p>
 </blockquote>
+</blockquote>
+
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 
