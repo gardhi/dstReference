@@ -4,6 +4,8 @@
 <style>
 h1 {color:Blue}
 h2 {color:Blue}
+div.code {
+	font-family: "Courier New", Courier, monospace }
 </style>
 </head>
 
@@ -11,10 +13,6 @@ h2 {color:Blue}
 
 <div style="background-color:#ececec">
 <h3> TODOS: </h3>
-<p><a href="#power-derate"> find the unit of power derate ?/C </a></p>
-<p> - handle fraction of days in pvbiom_plant_simulation </p>
-<p><a href="#get-most-expensive-solution"> add an equation to the explanation of the most expensive solution function.</a></p>
-<p><a href="#biomass-reference">write biomass reference/intruduction</a></p>
 </div>
 
 <hr /> &nbsp
@@ -24,15 +22,20 @@ h2 {color:Blue}
 <p>by Gard Hillestad 2016</p>
 <hr />
 
-<small>This manual explains how to use the Development Support Tool (DST) developed by Stefano Mandelli, Håkon Duus and Gard Hillestad. Please refer to the table of contents. If better names are found for a parameter or variable, please feel free to edit the code according to established coding practices - Always remember to edit documentation when changes has been made. The project can be cloned from <a href="http://www.github.com/gardhi/DST">http://www.github.com/gardhi/DST</a></small>
+<small>This manual explains how to use the Development Support Tool (DST) developed by Stefano Mandelli, Håkon Duus and Gard Hillestad. Please refer to the table of contents. If better names are found for a parameter or variable, please feel free to edit the code according to established coding practices - Always remember to edit documentation when changes has been made. The project can be cloned from <a href="http://www.github.com/gardhi/DST">http://www.github.com/gardhi/DST</a> <p> contact: gard.hillestad (at) gmail.com </p></small>
 </div>
 <div align="left"> &nbsp 
 
-<h2>Note to the user:</h2>
-<p>If you want to use this tool for dimensioning and planning purposes, asses the parameters and input thoroughly. The parameters in the <b>cycles_to_failure</b> function and in the <b>classes and properties</b> section (especially the economic parameters) should be investigated and updated, if not, results will be loose practical value. If your parameters are very precise/predictable, you may utilize the fine tuning aspects of this tool. One example of fine tuning is the step of LCoE (levelized cost of energy) and NPC (net present cost) whenever another battery replacement is necessary (look for the steps in the simulation overview surface plot). If not, please only use the trends from the simulation to plan your power plant installation. For a brief summary of small scale electricity generation, read up <a href="http://www.mpoweruk.com/ss_electricity_generation.htm"> here</a></p>
 
 <h2> Table of contents </h2>
 <ul>
+<li><a href="#notes-to-user"> Notes to the User (Important) </a>
+	<ul>
+	<li><a href="#updating-parameters">Updating Parameters</a></li>	
+	<li><a href="#ipv-jbatt">iPv and jBatt</a></li>
+	<li><a href="#data-location">Data Location</a></li>
+	</ul>
+</li>
 <li><a href="#gui"> GUIs </a>
 	<ul>
 	<li><a href="#dst-gui"> dst_gui </a> </li>
@@ -199,14 +202,23 @@ h2 {color:Blue}
 	<li><a href="#get-path-to-database">get_path_to_database</a></li>
 	<li><a href="#get-weather-predictions">get_weather_predictions</a></li>
 	<li><a href="#get-worst-case-batt-use">get_worst_case_batt_use</a></li>	
+	<li><a href="#get-longest-period">get_longest_period</a></li>
+	<li><a href="#get-worst-case-periods">get_worst_case_periods</a></li>
 	</ul>
 </li>
-<li>
-	<a href="#about-gui-implementation">About The Gui Implementation</a>
+<li><a href="#cloning-the-DST"> Cloning the DST from Github</a> </li>
+<li><a href="#about-gui-implementation">About The Gui Implementation</a>
 </li>
 </ul>
 
-
+<h2 id="notes-to-user"> Notes to the User (important) </h2>
+<h3 id="updating-parameters"> Updating Parameters </h3>
+<p>If you want to use this tool for dimensioning and planning purposes, asses the parameters and input thoroughly. The parameters in the <b>cycles_to_failure</b> function and in the <b>classes and properties</b> section (especially the economic parameters) should be investigated and updated, if not, results will be loose practical value. If your parameters are very precise/predictable, you may utilize the fine tuning aspects of this tool. One example of fine tuning is the step of LCoE (levelized cost of energy) and NPC (net present cost) whenever another battery replacement is necessary (look for the steps in the simulation overview surface plot). If not, please only use the trends from the simulation to plan your power plant installation. For a brief summary of small scale electricity generation, read up <a href="http://www.mpoweruk.com/ss_electricity_generation.htm"> here</a></p>
+<h3 id="ipv-jbatt">iPv and jBatt</h3>
+<p> These variables are recurring in the implementation as a way of choosing solutions. When iterating through the different combinations of PV and battery sizes, the for-loops will use iPv and jBatt as the iteration variables. ex. for iPv = pvStartKw:pvStepKw:pvStopKw. These iteration names are also used later in the code to refer to the same PV and battery combination. ex the largest size of PV and battery have the loss of load of SimulationOutputs.lossOfLoad(:,iPv,jBatt) = SimulationOutputs.lossOfLoad(:, nPv, nBatt) where nPv and nBatt is the number of iterations of each component size. </p>
+<h3 id="data-location">Data Location</h3>
+The datasets needs to be located under the database folder under a folder that defines the set. This is input to the dst_platform under filenames (just the names) and dataset (the folder which the files are located inside the database folder)
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <h2 id="gui"> GUIs </h2>
 <p> Here follows explanation of the different user interfaces that run the DST and how to use them. (How the GUIs are implemented will be explained at the bottom of the document.) </p> 
@@ -216,13 +228,14 @@ h2 {color:Blue}
 <p> The GUI programs will assign the appropriate values to the workspace, when a "run module" button is pressed. </p>
 <p>&nbsp</p> 
 <img src="dst_gui.png">
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <h3 id="solution-explorer"> solution_explorer </h3>
 <p>The solution explorer allows for key data from a given solution to be displayed. The top list displays the different solutions that was found. They are identified by a solution number, a net present cost, a levelized cost of energy and a loss of load probability</p>
 <p> There are three display options, two windows in the tool, and one option will make a new window. The choices for output are <b>general info</b> will give you an overview of the simulation, <b>averages</b> and <b> worst case </b>will allow for an understanding of the system performance and the <b>biomass system</b> will inform about how the biomass system functioned.</p>
 <p>&nbsp</p> 
 <img src="solution_explorer.png">
-
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <h2 id="modules"> Modules <font size="3"> <a href="#top"> (top) </a> </font> </h2>
 <blockquote>
@@ -247,6 +260,8 @@ h2 {color:Blue}
 	<p>The system is out of biomass and waits for a new delivery before it goes back to the <b>idle</b> state.</p>
 </blockquote>
 <img src="biomassSystemStateMachine.png" alt="The state machine of the biomass system" style="height:720px;width:720px">
+	<h4> pvbiomass_plant_simulation implementation flow-chart </h4>
+<img src="StateMachineFlowchart.png" style="height:1000px;width:800px">
 <h3 id="economic-analysis"> [ EconomicAnalysisOutputs ] = economic_analysis( SimuationParameters, BatteryParameters, InverterParameters, SimulationInputData, EconomicParameters, SimulationOutputs) </h3>
 <p> This module provide the economic calculations for the simulation results. The module output is the class EconomicAnalysisResults. The output matrices typically have one set of economic calculations for each PV and battery combination. Computation complexity O(n^2) (nPvSteps * nBattSteps)</p>
 <p>The analysis does roughly the following: figures out the costs depending on the different system sizes, these depend on the simulation parameters (except inverter). Then the wear on the battery in sumPartialCyclesUsed yield how many times the batteries must be replaced, and the cost of this.</p>
@@ -260,10 +275,15 @@ h2 {color:Blue}
 <p> This function finds the global minimum of levelized cost of energy for a simulation. For every extra battery that the system has to use, the LCoE increase by a step, and as the scale of the system go closer to that of needing another battery, the LCoE decrease. This can only be exploited if all the model parameters are very finely tuned to represent the real case scenario. See the <a href="simulations-overview"> simulations_overview </a> plot for a graphic representation of these steps.</p>
 </blockquote>
 
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <!-- CLASSES AND PROPERTIES =================================-->
 <h2 id="classes-and-properties"> Classes and Properties <font size="3"> <a href="#top"> (top) </a> </font></h2>
 <p>All parameters, inputs and outputs are contained in classes. The classes allow for batch passing of variables, and offer some help functions for generating dependent variables. The classes also allow for more comprehensive naming, consistency and understanding the origin or relation of the variable. <b>The classes should be made pointers so that they are not copied between modules. This is not the case in the Matlab implementation but is the default behavior of python</b></p>
+
+<img src="ClassDiagram.png" style="width:800px">
+
+<p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
 
 <blockquote>
 <!-- Simulation Parameters -->
@@ -467,7 +487,7 @@ h2 {color:Blue}
 	<h4 id="net-present-cost"> netPresentCost </h4>
 	<p> The total cost of the system after investment and yearly maintenance and replacement costs through the lifetime of the system. Also accounts for salvage refund of battery as they might have remaining lifetime. </p>
 	<h4 id="levelized-cost-of-energy"> levelizedCostOfEnergy </h4>
-	<p> The cost per kWh supplied by the system over the simulation period. This is important because we want the micro-grid to be competitive with the grid prices. We want to 1. justify the investment, and 2. be able to sell power to the grid if need be.</p>
+	<p> The LCoE is calculated by dividing the netPresentCost into equal annuities every year, so that we can divide this again on the amounts of kW produced by the system. The cost per kWh supplied by the system over the simulation period. This is important because we want the micro-grid to be competitive with the grid prices. We want to 1. justify the investment, and 2. be able to sell power to the grid if need be.</p>
 	<h4 id="batt-cost-tot"> battCostTot </h4>
 	<p> The total purchasing cost of the batteries at installation. Does not account for the replacement net present costs. </p>
 	<h4 id="inverter-cost-tot"> inverterCostTot </h4>
@@ -479,7 +499,7 @@ h2 {color:Blue}
 	<h4 id="operations-maintenance-replacement-cost-tot"> operationsMaintenanceReplacementCostTot </h4>
 	<p> The resulting net present cost of maintaining and operating the plant throughout the plants lifetime.</p>
 	<h4 id="capital-recovery-factor"> capitalRecoveryFactor </h4>
-	<p> A way of accounting for the cost of capital. Can be investigated closer <a href="http://www.investopedia.com/terms/c/capital-recovery.asp?layout=orig"> here </a>. This is used when calculating the LCoE </p>
+	<p> A way of accounting for the cost of capital. The factor converts an amount into <i>n</i> equal annuity payments given a normalized interest <i>i</i>. This is used for calculating the LCoE </p>
 	<h4 id="n-batt-employed"> nBattEmployed </h4>
 	<p>The number of times the batteries need to be completely changed and repurchased for the system. </p>
 	<h4 id="biomass-system-net-present-cost"> biomassSystemNetPresentCost</h4> <p>The total net present cost of the entire biomass system. This includes the investment, biomass consumption costs and maintenance costs.</p>
@@ -531,7 +551,8 @@ The following section will describe the plotting functions available. The <b>iPv
 <h2 id="help-functions"> Help Functions </h2>
 <blockquote>
 <h3 id="cycles-to-failure">[cycles] = cycles_to_failure( depthOfDischarge )</h3>
-<p> Calculates how many cycles the battery can run before it has to be replaced, if every cycle is at a specific depth of discharge. The parameters here are the fitting of a depth of discharge to cycles to failure graph of a general lithium ion battery, if possible, this equation should have updated values whenever a new system is planned (prices are also important to update).</p>
+<p> The cycles_to_failure function needs to be updated. The function is a fitting how many cycles the battery can handle at a certain level of discharge, before breaking down. This function will be supplied by the battery manufacturer and can simply be placed in the matlab function shown below.</p>
+<img src="cyclesLocation.png">
 <h3 id="get-daily-average">[averageDay] = get_daily_average( input )</h3>
 <p> For an array with hour resolution, this function calculates the average value for each hour in a day (24 hours). </p>
 <h3 id="get-hour-resolution">[hourArray] = get_hour_resolution( inArray, pointsHourly )</h3>
@@ -544,14 +565,46 @@ The following section will describe the plotting functions available. The <b>iPv
 <p> Returns a cell-array of weather predictions for the given absorbed power data. This is a heuristic function for guessing what days will be forecast as cloudy and sunny, for the case of running a generator preemptively. </p>
 <h3 id="get-worst-case-batt-use">[ nBattEmployed, yearsBattOperational ] = get_worst_case_batt_use( load, minSoc, plantLifetime ) </h3>
 <p> Assumes that every cycle that the load profile simulates is at maximum depth of discharge (minimum state of charge). This will output the most wearing use that the batteries can be subjected to. NOTE that this function will have to be "trained" for each data set to count the correct number of cycles, if you are sure that the cycles will occur once every day, this function can be replaced by plantLifetime/yearsBatteryOperational = plantLifetime/(1/(365/cycles_to_failure(1-minStateOfCharge)))</p>
+<h3 id="get-longest-period">[ longestPeriod, indexOfLongestPeriod ] = get_longest_period( dataSet )</h3>
+<p> Takes a vector and returns the longest period of nonzero values within that vector. Meaning that a completely nonzero vector will return longestPeriod = the sum of the entire set, and the indexOfLongestPeriod = 1.</p> 
+<h3 id="get-worst-case-periods">[ LowestIrradiation, LargestLoadProfile, LargestLossOfLoad ] = get_worst_case_periods( load, irradiation, lossOfLoad )</h3>
+<p> Returns three structs containing index and value for both week and day with worst values of the three input vectors. This means that the day with lowest irradiation will be found at LowestIrradiation.Day.time, and the sum of irradiation during this day is in LowestIrradiation.Day.value. The same logic applies to the other outputs.</p>
 </blockquote>
 <p><font size="2"> <a href="#top"> (back to top) </a> </font></p>
+
+<h2 id="cloning-the-DST">Cloning the DST from Git-Hub</h2>
+<p>
+The DST source-code is found online on <a href="http://www.github.com/gardhi/DST">http://www.github.com/gardhi/DST</a>. To inspect the code one only need to have a browser and internet, to run and test the code the code needs to be downloaded through Git. 
+Git is a version control program that allows for agile collaboration on projects, the use of Git is established throughout the programming world and widely used by the majority of professionals.
+</p>
+<p>Instructions on Downloading and testing the DST</p>
+<ol>
+<li><b>Install a Git client from anywhere.</b>
+	<p> For a desktop easy-to-use interface download github here:
+	<a href="https://desktop.github.com/">https://desktop.github.com/</a></p></li>
+<li><b>Open the Git Shell.</b>
+	<p> If you are using windows, press the windows-button and write: Git Shell</p></li>
+<li> <b>Clone the repository.</b>
+	<p> While using the git shell, navigate to the folder where you want the project to be placed. Cloning basically means downloading, this is done in the current folder by writing: <div class="code">git clone "<a href="http://www.github.com/gardhi/DST">http://www.github.com/gardhi/DST</a>"</div></p>
+	<p> It should look similar to this:
+	<img src="clone_github.png"> 
+	</p></li>
+<li><b> Run the code</b>
+	<p>You now have the entire project in the destination folder, open it in Matlab and include the folder DST to path and all subfolders.</p>
+	<p> To run the DST, simply write “dst_platform” in the Matlab console window once the folders are on the Matlab path.</p></li>
+<li> <b>Contribute </b>
+	<p>To work on the project, make a branch either in GitHub desktop or in the shell.</p>
+	<p>When your feature is finished it can be added to the project by a merging your branch with the master branch, and then pushing to the origin, or by a practice determined by project administrator. In this case a pull request is required, documentation is found online. </p>
+	<p> contact: gard.hillestad (at) gmail.com</p></li>
+</ol>
+
+
 
 <h2 id="about-gui-implementation"> About the GUI implementations </h2>
 <p> Note that the structure of the GUI is more quickly made than the modules, as the GUI will be completely rewritten in another language, the look and functionality is the example that successors will benefit the most from. </p>
 <p> All the GUIs are implemented with two global structs. The 'Set' struct keeps track of all the values that go from the GUI to the Matlab workspace. The 'h' struct contain the handles for the different uicontrols.</p>
 
-
+</div>
 </div>
 </body>
 </html>
